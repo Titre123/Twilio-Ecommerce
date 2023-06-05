@@ -10,11 +10,11 @@ const Footer = () => {
 						{/* Melvin Kisten */}
 						<a
 							rel='noopener noreferrer'
-							href='https://github.com/iammelvink'
+							href='https://github.com/titre123'
 							target='_blank'
 							className='melvin-kisten'
 						>
-							<i className='fas fa-user-circle'></i> Melvin Kisten Github
+							<i className='fas fa-user-circle'></i> Taiwo Github
 						</a>
 						Copyright &copy; React E-Commerce
 					</Col>

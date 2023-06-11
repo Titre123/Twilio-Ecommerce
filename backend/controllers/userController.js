@@ -15,6 +15,7 @@ const authUser = asyncHandler(async (req, res) => {
 			_id: user._id,
 			name: user.name,
 			email: user.email,
+			phoneNumber: user.phoneNumber,
 			isAdmin: user.isAdmin,
 			token: generateToken(user._id),
 		})
@@ -40,6 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
 		name,
 		email,
 		password,
+		phoneNumber
 	})
 
 	if (user) {
@@ -47,6 +49,7 @@ const registerUser = asyncHandler(async (req, res) => {
 			_id: user._id,
 			name: user.name,
 			email: user.email,
+			phoneNumber: user.phoneNumber,
 			isAdmin: user.isAdmin,
 			token: generateToken(user._id),
 		})
@@ -65,6 +68,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 			_id: user._id,
 			name: user.name,
 			email: user.email,
+			phoneNumber: user.phoneNumber,
 			isAdmin: user.isAdmin,
 		})
 	} else {
@@ -80,6 +84,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 	if (user) {
 		user.name = req.body.name || user.name
 		user.email = req.body.email || user.email
+		user.phoneNumber = req.body.phoneNumber ||user.phoneNumber
 		if (req.body.password) {
 			user.password = req.body.password
 		}
@@ -90,6 +95,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 			_id: updatedUser._id,
 			name: updatedUser.name,
 			email: updatedUser.email,
+			phoneNumber: user.phoneNumber,
 			isAdmin: updatedUser.isAdmin,
 			token: generateToken(user._id),
 		})
@@ -139,6 +145,7 @@ const updateUser = asyncHandler(async (req, res) => {
 	if (user) {
 		user.name = req.body.name || user.name
 		user.email = req.body.email || user.email
+		user.phoneNumber = req.body.phoneNumber || user.phoneNumber
 		user.isAdmin = req.body.isAdmin
 
 		const updatedUser = await user.save()
@@ -147,6 +154,7 @@ const updateUser = asyncHandler(async (req, res) => {
 			_id: updatedUser._id,
 			name: updatedUser.name,
 			email: updatedUser.email,
+			phoneNumber: updatedUser.phoneNumber,
 			isAdmin: updatedUser.isAdmin,
 		})
 	} else {

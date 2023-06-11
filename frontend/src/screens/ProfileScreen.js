@@ -4,6 +4,9 @@ import { LinkContainer } from 'react-router-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
+import countryData from 'country-data'
+import FlagIconFactory from 'react-flag-icon-css'
+import Select from 'react-select'
 import { getUserDetails, updateUserProfile } from '../actions/userActions'
 import { listMyOrders } from '../actions/orderActions'
 import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants'
@@ -14,8 +17,12 @@ const ProfileScreen = ({ history }) => {
 	const [password, setPassword] = useState('')
 	const [confirmPassword, setConfirmPassword] = useState('')
 	const [message, setMessage] = useState(null)
+	const [phoneNumber, setPhoneNumber] = useState('');
+  	const [countryCode, setCountryCode] = useState('');
 
 	const dispatch = useDispatch()
+
+	const FlagIcon = FlagIconFactory(React, { useCssModules: false });
 
 	// useSelector is to grab what we want from the state
 	const userDetails = useSelector((state) => state.userDetails)
@@ -46,6 +53,7 @@ const ProfileScreen = ({ history }) => {
 				} else {
 					setName(user.name)
 					setEmail(user.email)
+					setPhoneNumber(user.phoneNumber)
 				}
 			}
 		},
@@ -58,9 +66,18 @@ const ProfileScreen = ({ history }) => {
 		if (password !== confirmPassword) {
 			setMessage('Passwords do not match')
 		} else {
-			dispatch(updateUserProfile({ id: user._id, name, email, password }))
+			dispatch(updateUserProfile({ id: user._id, name, email, password, phoneNumber: `${countryCode}${phoneNumber}` }))
 		}
 	}
+
+	const countryCodes = countryData.callingCountries.all.map((country) => ({
+    code: `${country.countryCallingCodes[0]}`,
+    alpha2: country.alpha2,
+  }));
+
+  countryCodes.map((country) => {
+    console.log(country.alpha2.toLowerCase());
+  });
 
 	return (
 		<Row>
@@ -92,6 +109,36 @@ const ProfileScreen = ({ history }) => {
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 						></Form.Control>
+					</Form.Group>
+					{/* PhoneNumber */}
+					<Form.Group controlId="phoneNumber">
+					<Form.Label>Phone Number</Form.Label>
+					<Row>
+						<Col xs={4} sm={3} md={3}>
+						<Select
+							options={countryCodes.map((country) => ({
+							value: country.code,
+							label: (
+								<div>
+								<FlagIcon code={country.alpha2.toLowerCase()} size="lg" />
+								</div>
+							),
+							}))}
+							value={{ value: countryCode, label: countryCode }}
+							onChange={(selectedOption) => setCountryCode(selectedOption.value)}
+							isSearchable={false}
+						/>
+						</Col>
+						<Col xs={8} sm={9} md={9}>
+						<Form.Control
+							type="tel"
+							placeholder="Enter phone number"
+							value={phoneNumber}
+							required
+							onChange={(e) => setPhoneNumber(e.target.value)}
+						/>
+						</Col>
+					</Row>
 					</Form.Group>
 					{/* Password */}
 					<Form.Group controlId='password'>

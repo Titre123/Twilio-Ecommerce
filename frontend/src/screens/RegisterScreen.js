@@ -4,6 +4,9 @@ import { Form, Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
+import countryData from 'country-data'
+import FlagIconFactory from 'react-flag-icon-css'
+import Select from 'react-select'
 import FormContainer from '../components/FormContainer'
 import { register } from '../actions/userActions'
 
@@ -13,8 +16,12 @@ const RegisterScreen = ({ location, history }) => {
 	const [password, setPassword] = useState('')
 	const [confirmPassword, setConfirmPassword] = useState('')
 	const [message, setMessage] = useState(null)
+	const [phoneNumber, setPhoneNumber] = useState('');
+  	const [countryCode, setCountryCode] = useState('');
 
 	const dispatch = useDispatch()
+
+	const FlagIcon = FlagIconFactory(React, { useCssModules: false });
 
 	// useSelector is to grab what we want from the state
 	const userRegister = useSelector((state) => state.userRegister)
@@ -25,6 +32,16 @@ const RegisterScreen = ({ location, history }) => {
 	// make request here upon component load
 	useEffect(
 		() => {
+			const getUserCountryCode = async () => {
+				try {
+					const response = await fetch('https://ipapi.co/country_calling_code/');
+					const countryCode = await response.text();
+					setCountryCode(`${countryCode}`);
+				} catch (error) {
+					console.error('Error fetching user country code:', error);
+				}
+			};
+			getUserCountryCode();
 			if (userInfo) {
 				history.push(redirect)
 			}
@@ -39,9 +56,19 @@ const RegisterScreen = ({ location, history }) => {
 			setMessage('Passwords do not match')
 		} else {
 			// Dispatch register
-			dispatch(register(name, email, password))
+			dispatch(register(name, email, password, `${countryCode}${phoneNumber}`));
 		}
 	}
+
+
+	const countryCodes = countryData.callingCountries.all.map((country) => ({
+    code: `${country.countryCallingCodes[0]}`,
+    alpha2: country.alpha2,
+  }));
+
+  countryCodes.map((country) => {
+    console.log(country.alpha2.toLowerCase());
+  });
 
 	return (
 		<FormContainer>
@@ -73,6 +100,36 @@ const RegisterScreen = ({ location, history }) => {
 						onChange={(e) => setEmail(e.target.value)}
 					></Form.Control>
 				</Form.Group>
+				{/* PhoneNumber */}
+					<Form.Group controlId="phoneNumber">
+					<Form.Label>Phone Number</Form.Label>
+					<Row>
+						<Col xs={4} sm={3} md={3}>
+						<Select
+							options={countryCodes.map((country) => ({
+							value: country.code,
+							label: (
+								<div>
+								<FlagIcon code={country.alpha2.toLowerCase()} size="lg" />
+								</div>
+							),
+							}))}
+							value={{ value: countryCode, label: countryCode }}
+							onChange={(selectedOption) => setCountryCode(selectedOption.value)}
+							isSearchable={false}
+						/>
+						</Col>
+						<Col xs={8} sm={9} md={9}>
+						<Form.Control
+							type="tel"
+							placeholder="Enter phone number"
+							value={phoneNumber}
+							required
+							onChange={(e) => setPhoneNumber(e.target.value)}
+						/>
+						</Col>
+					</Row>
+					</Form.Group>
 				{/* Password */}
 				<Form.Group controlId='password'>
 					<Form.Label>Password</Form.Label>

@@ -76,7 +76,7 @@ export const logout = () => (dispatch) => {
 	document.location.href = '/login'
 }
 // Actions to register
-export const register = (name, email, password) => async (dispatch) => {
+export const register = (name, email, password, phoneNumber) => async (dispatch) => {
 	try {
 		dispatch({ type: USER_REGISTER_REQUEST })
 
@@ -89,7 +89,7 @@ export const register = (name, email, password) => async (dispatch) => {
 		// Make post request to register
 		const { data } = await axios.post(
 			'/api/users',
-			{ name, email, password },
+			{ name, email, password, phoneNumber },
 			config
 		)
 		// Dispatch register

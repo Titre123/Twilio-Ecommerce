@@ -28,7 +28,7 @@ const authUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-	const { name, email, password } = req.body
+	const { name, email, password, phoneNumber } = req.body
 
 	const userExists = await User.findOne({ email })
 
@@ -84,7 +84,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 	if (user) {
 		user.name = req.body.name || user.name
 		user.email = req.body.email || user.email
-		user.phoneNumber = req.body.phoneNumber ||user.phoneNumber
+		user.phoneNumber = req.body.phoneNumber || user.phoneNumber
 		if (req.body.password) {
 			user.password = req.body.password
 		}
@@ -154,7 +154,7 @@ const updateUser = asyncHandler(async (req, res) => {
 			_id: updatedUser._id,
 			name: updatedUser.name,
 			email: updatedUser.email,
-			phoneNumber: updatedUser.phoneNumber,
+			phoneNumber: user.phoneNumber,
 			isAdmin: updatedUser.isAdmin,
 		})
 	} else {
@@ -163,10 +163,24 @@ const updateUser = asyncHandler(async (req, res) => {
 	}
 })
 
+// @desc    Get user by phoneNumber
+// @route   GET /api/users/:phoneNumber
+// @access  Private/Admin
+const getUserByPhoneNumber = asyncHandler(async (req, res) => {
+	const user = await User.findOne({phoneNumber: req.user.phoneNumber});
+	if (user) {
+		res.json(user)
+	} else {
+		res.status(404)
+		throw new Error('User not found')
+	}
+})
+
 export {
 	authUser,
 	registerUser,
 	getUserProfile,
+	getUserByPhoneNumber,
 	updateUserProfile,
 	getUsers,
 	deleteUser,
